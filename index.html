@@ -86,14 +86,13 @@ h1 { animation: fadeIn 2s ease-in-out; }
 <body class="bg-light">
 
       <!-- Hero Section -->
-  <section style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; text-align:center; background: linear-gradient(135deg, #6c63ff, #f8a5c2); color:white;">
-    <h1 style="font-size:3rem; margin:0; animation: fadeIn 2s ease-in-out;">Welcome to GradeBox</h1>
-    <p style="font-size:1.5rem; margin:10px 0;">Track, Learn, and Achieve Like a Pro</p>
-    <a href="#grades" style="padding:12px 24px; background:white; color:#6c63ff; border-radius:8px; text-decoration:none; font-weight:bold; transition: all 0.3s ease;"
-       onmouseover="this.style.background='#e0e0e0'; this.style.color='#6c63ff';"
-       onmouseout="this.style.background='white'; this.style.color='#6c63ff';">Get Started</a>
-  </section>
-
+<!-- Hero Section -->
+<section id="hero" style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; text-align:center; background: linear-gradient(135deg, #6c63ff, #f8a5c2); color:white;">
+  <h1 style="font-size:3rem; margin:0;">Welcome to GradeBox</h1>
+  <p style="font-size:1.5rem; margin:10px 0;">Track, Learn, and Achieve Like a Pro</p>
+  <button id="getStartedBtn" class="btn btn-light mt-3">Get Started</button>
+</section>
+<div id="gradeboxWrapper" style="display:none;">
 <div class="container my-5">
   <div class="card shadow-sm">
     <div class="card-body">
@@ -135,7 +134,21 @@ h1 { animation: fadeIn 2s ease-in-out; }
     </div>
   </div>
 </div>
+</div>
+<script>
+  const btn = document.getElementById('getStartedBtn');
+  const hero = document.getElementById('hero');
+  const gradeboxWrapper = document.getElementById('gradeboxWrapper');
 
+  btn.addEventListener('click', () => {
+    // Hide hero section
+    hero.style.display = 'none';
+    // Show GradeBox content
+    gradeboxWrapper.style.display = 'block';
+    // Optional: scroll to top smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 let cutoffs = [];
@@ -260,6 +273,7 @@ function downloadCSV(){
 
 </body>
 </html>
+
 
 
 
