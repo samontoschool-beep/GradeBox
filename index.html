@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GradeBox | Make Grading Easy</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+
+/* Animated gradient background with pulse */
+body {
+    background: linear-gradient(-45deg, #1abc9c, #3498db, #9b59b6, #e74c3c);
+    background-size: 400% 400%;
+    animation: gradientBG 20s ease infinite, pulseBG 5s ease-in-out infinite alternate;
+}
+
+/* Smooth moving gradient */
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Pulsing brightness for dynamic effect */
+@keyframes pulseBG {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.2); }
+    100% { filter: brightness(1); }
+}
+
+/* Card shadow reacts to background pulse */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: cardPulse 5s ease-in-out infinite alternate;
+}
+
+@keyframes cardPulse {
+    0% { box-shadow: 0 15px 30px rgba(0,0,0,0.2); transform: translateY(0); }
+    50% { box-shadow: 0 20px 40px rgba(0,0,0,0.35); transform: translateY(-3px); }
+    100% { box-shadow: 0 15px 30px rgba(0,0,0,0.2); transform: translateY(0); }
+}
+
+
+.card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+.btn { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.btn:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.fade-in { animation: fadeIn 1s ease forwards; opacity: 0; }
+@keyframes fadeIn { to { opacity: 1; } }
+/* Grade Colors */
+.grade-A { background-color: #2ecc71 !important; color: white; }
+.grade-B { background-color: #3498db !important; color: white; }
+.grade-C { background-color: #f1c40f !important; color: white; }
+.grade-D { background-color: #e67e22 !important; color: white; }
+.grade-F { background-color: #e74c3c !important; color: white; }
+/* Highlight top score */
+.top-score { animation: glow 1s infinite alternate; }
+@keyframes glow { 0% { box-shadow: 0 0 5px #ffd700; } 100% { box-shadow: 0 0 20px #ffd700; } }
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .card-body { padding: 1rem; }
+    table { font-size: 0.85rem; }
+    input { font-size: 0.9rem; }
+    .btn { font-size: 0.9rem; padding: 0.5rem; }
+}
+th { cursor: pointer; }
+.table-responsive { overflow-x: auto; }
+</style>
+</head>
+<body class="bg-light">
+
+<div class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h1 class="card-title text-center mb-4 fade-in">Hi! I am GradeBox! What's up with you today?</h1>
+
+      <!-- Students Section -->
+      <div class="mb-3">
+        <label class="form-label">Number of Students:</label>
+        <input type="number" class="form-control" id="numStudents" min="1" value="1">
+        <button class="btn btn-primary mt-2 w-100" onclick="toggleSection('studentsSection', true)">Set Students</button>
+      </div>
+      <div id="studentsSection" style="display:none;">
+        <div id="studentsContainer" class="mb-3"></div>
+        <button class="btn btn-secondary w-100 mb-3" onclick="toggleSection('studentsSection', false)">Cancel</button>
+      </div>
+
+      <!-- Cutoffs Section -->
+      <h4>Grade Cutoffs</h4>
+      <div class="mb-3">
+        <label class="form-label">Number of Grade Levels:</label>
+        <input type="number" class="form-control" id="numCutoffs" min="1" value="5">
+        <button class="btn btn-primary mt-2 w-100" onclick="toggleSection('cutoffsSection', true)">Set Cutoffs</button>
+      </div>
+      <div id="cutoffsSection" style="display:none;">
+        <div id="cutoffsContainer" class="mb-3"></div>
+        <button class="btn btn-secondary w-100 mb-3" onclick="toggleSection('cutoffsSection', false)">Cancel</button>
+      </div>
+
+      <!-- CSV Export Section -->
+      <h4>Export your file?</h4>
+      <div class="mb-3">
+        <label class="form-label">Filename:</label>
+        <input type="text" class="form-control" id="csvFileName" placeholder="grades_report">
+      </div>
+      <button class="btn btn-success w-100 mb-2" onclick="calculateGrades()">Calculate Grades</button>
+      <button class="btn btn-warning w-100 mb-2" onclick="downloadCSV()">Download your file</button>
+
+      <div class="mt-4 table-responsive" id="results"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let cutoffs = [];
+let students = [];
+
+function toggleSection(sectionId, show){
+    const section = document.getElementById(sectionId);
+    section.style.display = show ? 'block' : 'none';
+    if(show && sectionId === 'studentsSection') createStudentInputs();
+    if(show && sectionId === 'cutoffsSection') createCutoffInputs();
+}
+
+function createStudentInputs() {
+    const container = document.getElementById('studentsContainer');
+    container.innerHTML = '';
+    const num = parseInt(document.getElementById('numStudents').value);
+    for(let i=0; i<num; i++){
+        const div = document.createElement('div');
+        div.className = 'mb-3 p-3 border rounded bg-light';
+        div.innerHTML = `
+            <label class="form-label">Student ${i+1} Name:</label>
+            <input type="text" id="name${i}" class="form-control" placeholder="Name">
+            <label class="form-label mt-2">Student ${i+1} Score:</label>
+            <input type="number" id="score${i}" class="form-control" placeholder="Score">
+        `;
+        container.appendChild(div);
+    }
+}
+
+function createCutoffInputs() {
+    const container = document.getElementById('cutoffsContainer');
+    container.innerHTML = '';
+    const num = parseInt(document.getElementById('numCutoffs').value);
+    cutoffs = [];
+    for(let i=0;i<num;i++){
+        const div = document.createElement('div');
+        div.className = 'mb-3 p-3 border rounded bg-light';
+        div.innerHTML = `
+            <label class="form-label">Grade Name ${i+1}:</label>
+            <input type="text" id="gradeName${i}" class="form-control" placeholder="e.g. A, B, Pass">
+            <label class="form-label mt-2">Minimum Score for ${i+1}:</label>
+            <input type="number" id="gradeMin${i}" class="form-control" placeholder="Minimum Score">
+        `;
+        container.appendChild(div);
+        cutoffs.push({name:`Grade${i+1}`, min:0});
+    }
+}
+
+function calculateGrades(){
+    const numStudents = parseInt(document.getElementById('numStudents').value);
+    const numCutoffs = parseInt(document.getElementById('numCutoffs').value);
+
+    cutoffs = [];
+    for(let i=0;i<numCutoffs;i++){
+        const name = document.getElementById(`gradeName${i}`).value || `Grade${i+1}`;
+        const min = parseInt(document.getElementById(`gradeMin${i}`).value) || 0;
+        cutoffs.push({name, min});
+    }
+    cutoffs.sort((a,b)=>b.min - a.min);
+
+    students = [];
+    let totalScore = 0;
+
+    for(let i=0;i<numStudents;i++){
+        const name = document.getElementById(`name${i}`).value || `Student${i+1}`;
+        const score = parseInt(document.getElementById(`score${i}`).value) || 0;
+        totalScore += score;
+        const grade = getLetterGrade(score);
+        students.push({name, score, grade});
+    }
+
+    const average = (totalScore/numStudents).toFixed(2);
+    displayResults(students, average);
+}
+
+function getLetterGrade(score){
+    for(let i=0;i<cutoffs.length;i++){
+        if(score >= cutoffs[i].min) return cutoffs[i].name;
+    }
+    return cutoffs[cutoffs.length-1].name;
+}
+
+function displayResults(students, average){
+    let html = `<h4 class="fade-in">Grades Report</h4><p class="fade-in">Average Score: ${average}</p>
+                <table class="table table-striped table-bordered fade-in">
+                <thead class="table-dark"><tr><th>Name</th><th>Score</th><th>Grade</th></tr></thead><tbody>`;
+    students.forEach(s=>{
+        html += `<tr><td>${s.name}</td><td>${s.score}</td><td>${s.grade}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+    document.getElementById('results').innerHTML = html;
+}
+
+function downloadCSV(){
+    if(students.length === 0){
+        alert("Please calculate grades first!");
+        return;
+    }
+    let csvContent = "data:text/csv;charset=utf-8,Name,Score,Grade\n";
+    students.forEach(s=>{
+        csvContent += `${s.name},${s.score},${s.grade}\n`;
+    });
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    const fileName = document.getElementById('csvFileName').value || `grades_report`;
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${fileName}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
+</body>
+</html>
