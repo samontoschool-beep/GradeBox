@@ -74,12 +74,32 @@ body {
 }
 th { cursor: pointer; }
 .table-responsive { overflow-x: auto; }
+@keyframes fadeIn {
+     from {opacity:0; transform:translateY(-20px);}
+     to {opacity:1; transform:translateY(0);}
+    }
+h1 { animation: fadeIn 2s ease-in-out; }
 </style>
     <script defer data-domain="gradebox.vercel.app" src="https://plausible.io/js/plausible.js"></script>
 </head>
     
 <body class="bg-light">
 
+      </section>
+
+  <!-- Pageviews Counter -->
+  <section id="grades" style="padding:50px; text-align:center;">
+    <h2 style="font-size:2rem; margin-bottom:20px;">Page Views</h2>
+    <div style="font-size:1.5rem; font-weight:bold;" id="counter">0</div>
+  </section>
+
+  <script>
+    fetch('https://api.countapi.xyz/hit/gradebox/visits')
+    .then(res => res.json())
+    .then(res => {
+      document.getElementById('counter').innerText = res.value;
+    });
+  </script>
 <div class="container my-5">
   <div class="card shadow-sm">
     <div class="card-body">
@@ -239,12 +259,13 @@ function downloadCSV(){
     <a href="mailto:samontoschool@gmail.com" style="color: #0070f3; text-decoration: none; font-weight: bold;">
       samontoschool@gmail.com
     </a>
-  </p><br>
+  </p>
     <br>
-        <p>Made with by BigSam | 2025</p>
+        <p>Made by BigSam | 2025</p>
 </footer>
 
 </body>
 </html>
+
 
 
