@@ -85,21 +85,15 @@ h1 { animation: fadeIn 2s ease-in-out; }
     
 <body class="bg-light">
 
-      </section>
-
-  <!-- Pageviews Counter -->
-  <section id="grades" style="padding:50px; text-align:center;">
-    <h2 style="font-size:2rem; margin-bottom:20px;">Page Views</h2>
-    <div style="font-size:1.5rem; font-weight:bold;" id="counter">0</div>
+      <!-- Hero Section -->
+  <section style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; text-align:center; background: linear-gradient(135deg, #6c63ff, #f8a5c2); color:white;">
+    <h1 style="font-size:3rem; margin:0; animation: fadeIn 2s ease-in-out;">Welcome to GradeBox</h1>
+    <p style="font-size:1.5rem; margin:10px 0;">Track, Learn, and Achieve Like a Pro</p>
+    <a href="#grades" style="padding:12px 24px; background:white; color:#6c63ff; border-radius:8px; text-decoration:none; font-weight:bold; transition: all 0.3s ease;"
+       onmouseover="this.style.background='#e0e0e0'; this.style.color='#6c63ff';"
+       onmouseout="this.style.background='white'; this.style.color='#6c63ff';">Get Started</a>
   </section>
 
-  <script>
-    fetch('https://api.countapi.xyz/hit/gradebox/visits')
-    .then(res => res.json())
-    .then(res => {
-      document.getElementById('counter').innerText = res.value;
-    });
-  </script>
 <div class="container my-5">
   <div class="card shadow-sm">
     <div class="card-body">
@@ -266,6 +260,7 @@ function downloadCSV(){
 
 </body>
 </html>
+
 
 
 
